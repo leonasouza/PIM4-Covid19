@@ -1,57 +1,29 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <locale.h>
-#include <stdbool.h>
-#include <string.h>
+#include <time.h>
 #include "./cadastros/structs.c"
+#include "./funcoes/funcoes.h"
+#define IDADE_MAXIMA 65
 
-/*
-* Arquivo com:
-    nome
-    idade
-    cep
-*/
-void cabecalho() {
-    system("cls");
-    printf("==================\n");
-    printf("=====COVID-19=====\n");
-    printf("==================\n");
-}
-
-int opcao; logado=0;
-pacienteLogradouro;pacienteCep;
-char usuario[20]; senha[20];
-pacienteNome[50];pacienteTelefone[20];pacienteRua[50];pacienteComplemento[50];pacienteBairro[50];pacienteCidade[50];
-pacienteEstado[2];pacienteEmail[30];pacienteDataDiagnostico[10];pacienteComorbidade[50];
+int opcao;logado=0;dia;mes;ano;
+    pacienteLogradouro;pacienteNascimentoDia;pacienteNascimentoMes;pacienteNascimentoAno;
+char usuario[21];senha[21];
+    pacienteNome[51];pacienteTelefone[21];pacienteRua[51];pacienteComplemento[51];pacienteBairro[51];pacienteCidade[51];
+    pacienteEstado[3];pacienteCep[10];pacienteEmail[31];pacienteDataDiagnostico[11];pacienteComorbidade[51];
+FILE *arquivo;
 Usuario structUsuario[MAX_USUARIOS];
 Paciente structPaciente[MAX_PACIENTES];
 
-
 int main(void) {
-    setlocale(LC_ALL, "Portuguese"); //permite acentuação em geral
-    system("chcp 1252"); //permite input com acentuação
-    strcpy(structUsuario[0].login, "admin");
-    strcpy(structUsuario[0].senha, "admin");
-    strcpy(structPaciente[0].nome, "João da Silva");
-    strcpy(structPaciente[0].telefone, "11 95555-5555");
-    strcpy(structPaciente[0].rua, "Rua dos Bobos");
-    structPaciente[0].logradouro=0;
-    strcpy(structPaciente[0].complemento, "");
-    strcpy(structPaciente[0].bairro, "Jardim dos Jardins");
-    strcpy(structPaciente[0].cidade, "São Paulo");
-    strcpy(structPaciente[0].estado, "SP");
-    structPaciente[0].cep=01234567;
-    structPaciente[0].nasc.dia=01;
-    structPaciente[0].nasc.mes=12;
-    structPaciente[0].nasc.ano=2000;
-    strcpy(structPaciente[0].email, "email@email.com");
-    strcpy(structPaciente[0].dataDiagnostico, "01/01/2020");
-    strcpy(structPaciente[0].comorbidade, "Diabetes");
+    dataAtual(); //define os valores para a data atual
+    system("chcp 1252"); //configuração para liberar acentuação no programa
+    popularPrograma(); //carrega dados aleatórios para popular o programa
 
-    do {
+    /*do {
         cabecalho();
         printf("1 - Fazer login\n");
         printf("2 - Cadastrar usuário\n");
+        printf("9 - Sair do sistema\n");
         scanf("%d",&opcao);
         switch (opcao) {
             case 1:
@@ -69,7 +41,6 @@ int main(void) {
                 if (logado==0) {
                     printf("Dados incorretos\n");
                     system("pause");
-                    break;
                 }
                 break;
             case 2:
@@ -90,8 +61,10 @@ int main(void) {
                     }
                 }
                 break;
+            case 9:
+                return 0;
         }
-    } while(logado!=1);
+    } while(logado!=1);*/
 
     opcao=0;
 
@@ -100,24 +73,72 @@ int main(void) {
         printf("Olá, %s. Selecione uma opção:\n\n",usuario);
         printf("1 - Cadastrar paciente\n");
         printf("2 - Listar todos os pacientes\n");
-        printf("3 - Listar pacientes do grupo de risco\n");
+        printf("3 - Listar pacientes com comorbidades\n");
+        printf("4 - Exportar lista de pacientes de risco\n");
         printf("9 - Fechar o sistema\n");
         scanf("%d",&opcao);
         switch (opcao) {
             case 1:
                 cabecalho();
-                fflush(stdin);
+                fflush(stdin);//configuração para evitar erros na leitura do fgets
                 printf("Cadastro de pacientes\n");
                 printf("Nome: ");
-                fgets(pacienteNome, sizeof pacienteNome, stdin);
-                strtok(pacienteNome, "\n");
+                    fgets(pacienteNome, sizeof pacienteNome, stdin);
+                    strcpy(pacienteNome, formatar(pacienteNome));//a função formatar() evita quebra de linha caso a variável esteja vazia
+                printf("Endereço (rua sem número nem complemento): ");
+                    fgets(pacienteRua, sizeof pacienteRua, stdin);
+                    strcpy(pacienteRua, formatar(pacienteRua));
+                printf("Número: ");
+                    scanf("%i",&pacienteLogradouro);
+                    fflush(stdin);
+                printf("Complemento: ");
+                    fgets(pacienteComplemento, sizeof pacienteComplemento, stdin);
+                    strcpy(pacienteComplemento, formatar(pacienteComplemento));
+                printf("Bairro: ");
+                    fgets(pacienteBairro, sizeof pacienteBairro, stdin);
+                    strcpy(pacienteBairro, formatar(pacienteBairro));
                 printf("Cidade: ");
-                fgets(pacienteCidade, sizeof pacienteCidade, stdin);
-                strtok(pacienteCidade, "\n");
+                fflush(stdin);
+                    fgets(pacienteCidade, sizeof pacienteCidade, stdin);
+                    strcpy(pacienteCidade, formatar(pacienteCidade));
+                printf("Estado: ");
+                    fgets(pacienteEstado, sizeof pacienteEstado, stdin);
+                    strcpy(pacienteEstado, formatar(pacienteEstado));
+                printf("CEP: ");
+                    fgets(pacienteCep, sizeof pacienteCep, stdin);
+                    strcpy(pacienteCep, formatar(pacienteCep));
+                printf("Data de nascimento no formato (DD/MM/AAAA): ");
+                    scanf("%i/%i/%i",&pacienteNascimentoDia,&pacienteNascimentoMes,&pacienteNascimentoAno);
+                    fflush(stdin);
+                printf("Telefone: ");
+                    fgets(pacienteTelefone, sizeof pacienteTelefone, stdin);
+                    strcpy(pacienteTelefone, formatar(pacienteTelefone));
+                printf("Email: ");
+                    fgets(pacienteEmail, sizeof pacienteEmail, stdin);
+                    strcpy(pacienteEmail, formatar(pacienteEmail));
+                printf("Data do diagnóstico: ");
+                    fgets(pacienteDataDiagnostico, sizeof pacienteDataDiagnostico, stdin);
+                    strcpy(pacienteDataDiagnostico, formatar(pacienteDataDiagnostico));
+                printf("Comorbidade ou gravidez (não preencher se não houver): ");
+                    fgets(pacienteComorbidade, sizeof pacienteComorbidade, stdin);
+                    strcpy(pacienteComorbidade, formatar(pacienteComorbidade));
                 for (int i=0;i<MAX_PACIENTES;i++) {
                     if (strcmp(structPaciente[i].nome, "")==0) {
                         strcpy(structPaciente[i].nome, pacienteNome);
+                        strcpy(structPaciente[i].rua, pacienteRua);
+                        structPaciente[i].logradouro=pacienteLogradouro;
+                        strcpy(structPaciente[i].complemento, pacienteComplemento);
+                        strcpy(structPaciente[i].bairro, pacienteBairro);
                         strcpy(structPaciente[i].cidade, pacienteCidade);
+                        strcpy(structPaciente[i].estado, pacienteEstado);
+                        strcpy(structPaciente[i].cep, pacienteCep);
+                        structPaciente[i].nascimentoDia=pacienteNascimentoDia;
+                        structPaciente[i].nascimentoMes=pacienteNascimentoMes;
+                        structPaciente[i].nascimentoAno=pacienteNascimentoAno;
+                        strcpy(structPaciente[i].telefone, pacienteTelefone);
+                        strcpy(structPaciente[i].email, pacienteEmail);
+                        strcpy(structPaciente[i].dataDiagnostico, pacienteDataDiagnostico);
+                        strcpy(structPaciente[i].comorbidade, pacienteComorbidade);
                         break;
                     }
                 }
@@ -128,7 +149,7 @@ int main(void) {
                 cabecalho();
                 for (int i=0;i<MAX_PACIENTES;i++) {
                     if (strcmp(structPaciente[i].nome, "")!=0) {
-                        printf("Nome: %s | Cidade: %s | Bairro: %s\n", structPaciente[i].nome, structPaciente[i].cidade, structPaciente[i].bairro);
+                        dadosDoPaciente(i);
                     }
                 }
                 system("pause");
@@ -137,10 +158,32 @@ int main(void) {
                 cabecalho();
                 for (int i=0;i<MAX_PACIENTES;i++) {
                     if (strcmp(structPaciente[i].comorbidade, "")!=0) {
-                        printf("Nome: %s | Cidade: %s | Comorbidade: %s\n", structPaciente[i].nome, structPaciente[i].cidade, structPaciente[i].comorbidade);
+                        dadosDoPaciente(i);
                     }
                 }
-                printf("A lista de pacientes do grupo de risco foi salva automaticamente em um arquivo externo\n");
+                system("pause");
+                break;
+            case 4:
+                arquivo = fopen("ListaDeRisco.txt","w");
+                for (int i=0;i<MAX_PACIENTES;i++) {
+                    int diferencaAno = ano - structPaciente[i].nascimentoAno;
+                    if (strcmp(structPaciente[i].comorbidade, "")!=0) {
+                        if (diferencaAno > IDADE_MAXIMA) {
+                            exportarPaciente(i);
+                        } else if (diferencaAno == IDADE_MAXIMA) {
+                            if (mes > structPaciente[i].nascimentoMes) {
+                                exportarPaciente(i);
+                            } else if (mes == structPaciente[i].nascimentoMes) {
+                                if (dia >= structPaciente[i].nascimentoDia) {
+                                    exportarPaciente(i);
+                                }
+                            }
+                        }
+                    }
+                }
+                fclose(arquivo);
+                cabecalho();
+                printf("\nA lista de pacientes do grupo de risco foi salva automaticamente em um arquivo externo\n");
                 system("pause");
                 break;
         }
