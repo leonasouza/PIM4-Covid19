@@ -2,7 +2,9 @@ extern int dia;mes;ano;
 extern Paciente structPaciente[MAX_PACIENTES];
 extern Usuario structUsuario[MAX_USUARIOS];
 extern FILE *arquivo;
+extern const IDADE_MAXIMA;
 char saida[256];
+int dia;mes;ano;
 
 void cabecalho() {
     system("cls");
@@ -42,6 +44,11 @@ void exportarPaciente(int i) {
     fprintf(arquivo, "---------------------------------------------------\n");
 }
 
+void exportarPacienteDeRisco(int i,int idade) {
+    fprintf(arquivo, "PACIENTE: %s, CEP: %s, IDADE:%d\n", structPaciente[i].nome, structPaciente[i].cep, idade);
+    fprintf(arquivo, "---------------------------------------------------\n");
+}
+
 char* formatar(char *entrada) {
         saida[250] = strcpy(saida,"");;
     if (strcmp(entrada,"\n")==0) {
@@ -51,6 +58,23 @@ char* formatar(char *entrada) {
         saida[250] = strtok(saida,"\n");
     }
     return saida;
+}
+
+int verificaIdade(int i) {
+    int diferencaAno = ano - structPaciente[i].nascimentoAno;
+    int idade;
+        if (diferencaAno > IDADE_MAXIMA) {
+            idade = diferencaAno;
+        } else if (diferencaAno == IDADE_MAXIMA) {
+            if (mes > structPaciente[i].nascimentoMes) {
+                idade = diferencaAno;
+            } else if (mes == structPaciente[i].nascimentoMes) {
+                if (dia >= structPaciente[i].nascimentoDia) {
+                    idade = diferencaAno;
+                }
+            }
+        }
+    return idade;
 }
 
 void popularPrograma() {
@@ -69,7 +93,7 @@ void popularPrograma() {
     strcpy(structPaciente[0].cep, "01234-567");
     structPaciente[0].nascimentoDia=01;
     structPaciente[0].nascimentoMes=11;
-    structPaciente[0].nascimentoAno=1960;
+    structPaciente[0].nascimentoAno=1950;
     strcpy(structPaciente[0].email, "email@email.com");
     strcpy(structPaciente[0].dataDiagnostico, "01/01/2020");
     strcpy(structPaciente[0].comorbidade, "Diabetes");

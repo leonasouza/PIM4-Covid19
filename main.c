@@ -3,9 +3,9 @@
 #include <time.h>
 #include "./cadastros/structs.c"
 #include "./funcoes/funcoes.h"
-#define IDADE_MAXIMA 65
 
-int opcao;logado=0;dia;mes;ano;
+const int IDADE_MAXIMA=65;
+int opcao;logado=0;
     pacienteLogradouro;pacienteNascimentoDia;pacienteNascimentoMes;pacienteNascimentoAno;
 char usuario[21];senha[21];
     pacienteNome[51];pacienteTelefone[21];pacienteRua[51];pacienteComplemento[51];pacienteBairro[51];pacienteCidade[51];
@@ -74,7 +74,8 @@ int main(void) {
         printf("1 - Cadastrar paciente\n");
         printf("2 - Listar todos os pacientes\n");
         printf("3 - Listar pacientes com comorbidades\n");
-        printf("4 - Exportar lista de pacientes de risco\n");
+        printf("4 - Exportar lista de todos os pacientes\n");
+        printf("5 - Exportar lista de pacientes de risco\n");
         printf("9 - Fechar o sistema\n");
         scanf("%d",&opcao);
         switch (opcao) {
@@ -108,7 +109,7 @@ int main(void) {
                     fgets(pacienteCep, sizeof pacienteCep, stdin);
                     strcpy(pacienteCep, formatar(pacienteCep));
                 printf("Data de nascimento no formato (DD/MM/AAAA): ");
-                    scanf("%i/%i/%i",&pacienteNascimentoDia,&pacienteNascimentoMes,&pacienteNascimentoAno);
+                    scanf("%d/%d/%d",&pacienteNascimentoDia,&pacienteNascimentoMes,&pacienteNascimentoAno);
                     fflush(stdin);
                 printf("Telefone: ");
                     fgets(pacienteTelefone, sizeof pacienteTelefone, stdin);
@@ -164,20 +165,23 @@ int main(void) {
                 system("pause");
                 break;
             case 4:
+                arquivo = fopen("TodosOsPacientes.txt","w");
+                for (int i=0;i<MAX_PACIENTES;i++) {
+                    if (strcmp(structPaciente[i].nome, "")!=0) {
+                        exportarPaciente(i);
+                    }
+                }
+                fclose(arquivo);
+                cabecalho();
+                printf("\nA lista de todos os pacientes foi salva automaticamente em um arquivo externo\n");
+                system("pause");
+                break;
+            case 5:
                 arquivo = fopen("ListaDeRisco.txt","w");
                 for (int i=0;i<MAX_PACIENTES;i++) {
-                    int diferencaAno = ano - structPaciente[i].nascimentoAno;
                     if (strcmp(structPaciente[i].comorbidade, "")!=0) {
-                        if (diferencaAno > IDADE_MAXIMA) {
-                            exportarPaciente(i);
-                        } else if (diferencaAno == IDADE_MAXIMA) {
-                            if (mes > structPaciente[i].nascimentoMes) {
-                                exportarPaciente(i);
-                            } else if (mes == structPaciente[i].nascimentoMes) {
-                                if (dia >= structPaciente[i].nascimentoDia) {
-                                    exportarPaciente(i);
-                                }
-                            }
+                        if (verificaIdade(i)>=IDADE_MAXIMA) {
+                            exportarPacienteDeRisco(i,verificaIdade(i));
                         }
                     }
                 }
