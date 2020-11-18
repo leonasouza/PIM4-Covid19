@@ -19,7 +19,7 @@ int main(void) {
     system("chcp 1252"); //configuração para liberar acentuação no programa
     popularPrograma(); //carrega dados aleatórios para popular o programa
 
-    /*do {
+    do {
         cabecalho();
         printf("1 - Fazer login\n");
         printf("2 - Cadastrar usuário\n");
@@ -64,7 +64,7 @@ int main(void) {
             case 9:
                 return 0;
         }
-    } while(logado!=1);*/
+    } while(logado!=1);
 
     opcao=0;
 
@@ -99,7 +99,7 @@ int main(void) {
                     fgets(pacienteBairro, sizeof pacienteBairro, stdin);
                     strcpy(pacienteBairro, formatar(pacienteBairro));
                 printf("Cidade: ");
-                fflush(stdin);
+                    fflush(stdin);
                     fgets(pacienteCidade, sizeof pacienteCidade, stdin);
                     strcpy(pacienteCidade, formatar(pacienteCidade));
                 printf("Estado: ");
@@ -179,7 +179,7 @@ int main(void) {
             case 5:
                 arquivo = fopen("ListaDeRisco.txt","w");
                 for (int i=0;i<MAX_PACIENTES;i++) {
-                    if (strcmp(structPaciente[i].comorbidade, "")!=0) {
+                    if (strcmp(structPaciente[i].nome, "")!=0) {
                         if (verificaIdade(i)>=IDADE_MAXIMA) {
                             exportarPacienteDeRisco(i,verificaIdade(i));
                         }

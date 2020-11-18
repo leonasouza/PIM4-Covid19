@@ -1,5 +1,5 @@
 #define MAX_USUARIOS 10
-#define MAX_PACIENTES 20
+#define MAX_PACIENTES 50
 
 typedef struct {
     char login[31];

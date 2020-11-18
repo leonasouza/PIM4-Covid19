@@ -24,6 +24,7 @@ void dataAtual() {
 
 void dadosDoPaciente(int i) {
     printf("PACIENTE: %s, diagnosticado em: %s\n", structPaciente[i].nome, structPaciente[i].dataDiagnostico);
+    printf("     IDADE: %d\n",verificaIdade(i));
     printf("     Cidade: %s | Bairro: %s | Estado: %s\n", structPaciente[i].cidade, structPaciente[i].bairro, structPaciente[i].estado);
     printf("     Rua: %s | N.: %d | Complemento: %s | ", structPaciente[i].rua, structPaciente[i].logradouro, structPaciente[i].complemento);
     printf("CEP: %s\n", structPaciente[i].cep);
@@ -35,6 +36,7 @@ void dadosDoPaciente(int i) {
 
 void exportarPaciente(int i) {
     fprintf(arquivo, "PACIENTE: %s, diagnosticado em: %s\n", structPaciente[i].nome, structPaciente[i].dataDiagnostico);
+    fprintf(arquivo, "     IDADE: %d\n",verificaIdade(i));
     fprintf(arquivo, "     Cidade: %s | Bairro: %s | Estado: %s\n", structPaciente[i].cidade, structPaciente[i].bairro, structPaciente[i].estado);
     fprintf(arquivo, "     Rua: %s | N.: %d | Complemento: %s | ", structPaciente[i].rua, structPaciente[i].logradouro, structPaciente[i].complemento);
     fprintf(arquivo, "CEP: %s\n", structPaciente[i].cep);
@@ -50,7 +52,7 @@ void exportarPacienteDeRisco(int i,int idade) {
 }
 
 char* formatar(char *entrada) {
-        saida[250] = strcpy(saida,"");;
+        saida[250] = strcpy(saida,"");
     if (strcmp(entrada,"\n")==0) {
         saida[250] = strcpy(entrada,"");
     } else {
@@ -61,20 +63,18 @@ char* formatar(char *entrada) {
 }
 
 int verificaIdade(int i) {
-    int diferencaAno = ano - structPaciente[i].nascimentoAno;
-    int idade;
-        if (diferencaAno > IDADE_MAXIMA) {
-            idade = diferencaAno;
-        } else if (diferencaAno == IDADE_MAXIMA) {
-            if (mes > structPaciente[i].nascimentoMes) {
-                idade = diferencaAno;
-            } else if (mes == structPaciente[i].nascimentoMes) {
-                if (dia >= structPaciente[i].nascimentoDia) {
-                    idade = diferencaAno;
-                }
-            }
+    int idade = ano - structPaciente[i].nascimentoAno;
+    if (structPaciente[i].nascimentoMes > mes) {
+        return --idade;
+    } else if(structPaciente[i].nascimentoMes < mes) {
+        return idade;
+    } else if(structPaciente[i].nascimentoMes == mes) {
+        if (structPaciente[i].nascimentoDia >= dia) {
+            return idade;
+        } else if (structPaciente[i].nascimentoDia < dia) {
+            return --idade;
         }
-    return idade;
+    }
 }
 
 void popularPrograma() {
